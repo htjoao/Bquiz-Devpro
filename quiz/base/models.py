@@ -7,6 +7,7 @@ class Aluno (models.Model):
     email = models.EmailField(unique=True)
     criado_em = models.DateTimeField(auto_now_add=True)
 
+
 class Pergunta (models.Model):
     enunciado = models.TextField()
     disponivel = models.BooleanField(default=False)

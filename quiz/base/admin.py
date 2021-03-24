@@ -11,4 +11,4 @@ class PerguntaAdmin(admin.ModelAdmin):
 
 @admin.register(Aluno)
 class AlunoAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nome', 'email','criado_em')
+    list_display = ('id', 'nome', 'email', 'criado_em')
