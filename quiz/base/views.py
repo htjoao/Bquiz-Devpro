@@ -34,6 +34,17 @@ def classificacao(requisicao):
 
 
 def perguntas(requisicao, indice):
-    pergunta = Pergunta.objects.filter(disponivel=True).order_by('id')[indice - 1]
-    contexto = {'indice_da_questao': indice, 'pergunta': pergunta}
+    try:
+        aluno_id = requisicao.session[' aluno_id ']
+    except KeyError:
+        return redirect('/')
+    else:
+        pergunta = Pergunta.objects.filter(disponivel=True).order_by('id')[indice - 1]
+        contexto = {'indice_da_questao': indice, 'pergunta': pergunta}
+        if requisicao.method == 'POST':
+            resposta_indice = int(requisicao.POST['resposta_indice'])
+            if resposta_indice == pergunta.alternativa_correta:
+                # Armazenar dados da resposta
+                return redirect(f'/perguntas/{indice + 1}')
+            contexto['resposta_indice'] = resposta_indice
     return render(requisicao, 'base/game.html', context=contexto)
