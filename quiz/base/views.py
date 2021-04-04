@@ -34,7 +34,7 @@ def home(requisicao):
 
 def classificacao(requisicao):
     try:
-        aluno_id = requisicao.session[' aluno_id ']
+        aluno_id = requisicao.session['aluno_id']
     except KeyError:
         return redirect('/')
     else:
@@ -42,7 +42,7 @@ def classificacao(requisicao):
         pontuacao_do_aluno = pontos_dct['pontos__sum']
 
         numero_de_alunos_com_maior_pontuacao = \
-            Resposta.objects.values('aluno').annotate(Sum('pontos')).filtaer(pontos__sum__gt=pontuacao_do_aluno).count()
+            Resposta.objects.values('aluno').annotate(Sum('pontos')).filter(pontos__sum__gt=pontuacao_do_aluno).count()
         primeiros_alunos_da_classificacao = list(
             Resposta.objects.values('aluno', 'aluno__nome').annotate(Sum('pontos')).order_by('-pontos__sum')[:5]
         )
@@ -59,7 +59,7 @@ PONTUACAO_MAXIMA = 1000
 
 def perguntas(requisicao, indice):
     try:
-        aluno_id = requisicao.session[' aluno_id ']
+        aluno_id = requisicao.session['aluno_id']
     except KeyError:
         return redirect('/')
     else:
@@ -77,12 +77,12 @@ def perguntas(requisicao, indice):
                         data_da_primeira_resposta =\
                             Resposta.objects.filter(pergunta=pergunta).order_by('respondida_em')[0].respondida_em
                     except IndexError:
-                        Resposta(aluno_id=aluno_id, pergunta=contexto, pontos=PONTUACAO_MAXIMA).save()
+                        Resposta(aluno_id=aluno_id, pergunta=pergunta, pontos=PONTUACAO_MAXIMA).save()
                     else:
                         diferenca = now() - data_da_primeira_resposta
                         diferencao_em_sedundos = int(diferenca.total_seconds())
                         pontos = max(PONTUACAO_MAXIMA - diferencao_em_sedundos, 10)
-                        Resposta(aluno_id=aluno_id, pergunta=contexto, pontos=pontos).save()
+                        Resposta(aluno_id=aluno_id, pergunta=pergunta, pontos=pontos).save()
                     return redirect(f'/perguntas/{indice + 1}')
                 contexto['resposta_indice'] = resposta_indice
             return render(requisicao, 'base/game.html', context=contexto)
